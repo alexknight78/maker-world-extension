@@ -240,10 +240,11 @@ async function updateCardOnPage(design) {
       gridContainer.appendChild(printProfileRewardsElement);
 
       const progressBarContainer = document.createElement('div');
-      progressBarContainer.style.width = '100%';
+      // progressBarContainer.style.width = '100%';
       progressBarContainer.style.backgroundColor = '#e0e0e0';
       progressBarContainer.style.borderRadius = '8px';
       progressBarContainer.style.height = '10px';
+      progressBarContainer.style.margin = '12px';
 
       const progressBar = document.createElement('div');
       progressBar.style.height = '10px';
@@ -253,17 +254,31 @@ async function updateCardOnPage(design) {
 
       progressBarContainer.appendChild(progressBar);
 
-      const downloadsRemaining = document.createElement('span');
+      const downloadsRemaining = document.createElement('div');
       downloadsRemaining.style.fontSize = '12px';
       downloadsRemaining.style.color = '#898989';
-      downloadsRemaining.style.paddingLeft = '8px';
+      // downloadsRemaining.style.paddingLeft = '8px';
+      downloadsRemaining.style.margin = '12px';
+      downloadsRemaining.style.marginTop = '0px';
 
       updateProgressBar(progressBar, totalDownloads, downloadsRemaining);
 
-      gridContainer.appendChild(progressBarContainer);
-      gridContainer.appendChild(downloadsRemaining);
+      // gridContainer.appendChild(progressBarContainer);
+      // gridContainer.appendChild(downloadsRemaining);
+
+      const divContainer = document.createElement('div');
+      // divContainer.style.display = 'block';
+      divContainer.style.width = '100%';
+      // divContainer.style.marginLeft = '12px';
+      // divContainer.style.marginRight = '12px';
+      // divContainer.style.borderTop = '1px sold #eeeeee';
+      // divContainer.textContent = 'Test';
+
+      divContainer.appendChild(progressBarContainer);
+      divContainer.appendChild(downloadsRemaining);
 
       cardContainer.appendChild(gridContainer);
+      cardContainer.appendChild(divContainer);
 
       if (design.contest && design.contest.contestName) {
         const contestElement = createStyledElementWithIcon(
@@ -305,19 +320,28 @@ function updateProgressBar(progressBar, totalDownloads, downloadsRemaining) {
   if (totalDownloads === previousMilestone) {
     progressPercentage = 0; // At the start of a new milestone
   } else {
-    progressPercentage = ((totalDownloads - previousMilestone) / milestoneGap) * 100;
+    // progressPercentage = ((totalDownloads - previousMilestone) / milestoneGap) * 100;
+    progressPercentage = (totalDownloads * 100) / nextMilestone;
   }
 
   // Ensure the progress bar is never completely empty (for visual feedback)
   progressBar.style.width = `${Math.max(progressPercentage, 1)}%`;
 
+  if(Math.max(progressPercentage, 1) <= 50) {
+    progressBar.style.backgroundColor = '#ff6600';
+  } else if(Math.max(progressPercentage, 1) <= 75) {
+    progressBar.style.backgroundColor = '#eeba00'
+  }
+
   // Update the downloads remaining text
   if (downloadsRemaining) {
+    //console.log(nextMilestone, totalDownloads)
     const remaining = nextMilestone - totalDownloads;
     if (remaining === 0) {
-      downloadsRemaining.textContent = 'Milestone reached!';
+      downloadsRemaining.textContent = `Downloads: ${totalDownloads} | Milestone: ${nextMilestone} | Milestone reached!`;
     } else {
-      downloadsRemaining.textContent = `${remaining} more to go`;
+      // downloadsRemaining.textContent = `${remaining} more to go`;
+      downloadsRemaining.textContent = `Downloads: ${totalDownloads} | Milestone: ${nextMilestone} | Remaining: ${remaining}`;
     }
   }
 }
@@ -587,15 +611,15 @@ function handleModelPage(modelId, lang) {
 
 function getCurrentLanguage() {
   const pathParts = window.location.pathname.split('/');
-  return pathParts[1] === 'en' || pathParts[1] === 'zh' ? pathParts[1] : 'en';
+  return pathParts[1] === 'de' || pathParts[1] === 'en' || pathParts[1] === 'zh' ? pathParts[1] : 'en';
 }
 
 function checkPageTypeAndLoadData() {
   const makerMatch = window.location.href.match(
-    /https:\/\/(www\.)?(makerworld\.com|makerworld\.com\.cn)\/(en|zh)\/@(\w+)/
+    /https:\/\/(www\.)?(makerworld\.com|makerworld\.com\.cn)\/(en|zh|de)\/@(\w+)/
   );
   const modelMatch = window.location.href.match(
-    /https:\/\/(www\.)?(makerworld\.com|makerworld\.com\.cn)\/(en|zh)\/models\/(\d+)/
+    /https:\/\/(www\.)?(makerworld\.com|makerworld\.com\.cn)\/(en|zh|de)\/models\/(\d+)/
   );
 
   if (makerMatch) {
