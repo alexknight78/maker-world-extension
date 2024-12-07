@@ -320,8 +320,8 @@ function updateProgressBar(progressBar, totalDownloads, downloadsRemaining) {
   if (totalDownloads === previousMilestone) {
     progressPercentage = 0; // At the start of a new milestone
   } else {
-    // progressPercentage = ((totalDownloads - previousMilestone) / milestoneGap) * 100;
-    progressPercentage = (totalDownloads * 100) / nextMilestone;
+    progressPercentage = ((totalDownloads - previousMilestone) / milestoneGap) * 100;
+    // progressPercentage = (totalDownloads * 100) / nextMilestone;
   }
 
   // Ensure the progress bar is never completely empty (for visual feedback)
