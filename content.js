@@ -126,16 +126,17 @@ function createButtonElementWithIcon(svgFilePath, buttonText, onClickCallback) {
 
 // Updates the design card on the page with additional information
 async function updateCardOnPage(design) {
+  // console.log('updateCardOnPage design', design)
   const selectedRegion = await getStoredRegion();
   const { points, rate, symbol } = getConversionRate(selectedRegion);
-
+  // console.log('points', points, 'rate', rate, 'symbol', symbol)
   const downloadPoints = calculatePoints(design.downloadCount, design.printCount);
   const printProfilePoints = calculatePrintProfileScore(design);
   const totalPoints = downloadPoints + printProfilePoints;
   const dollarValue = ((totalPoints / points) * rate).toFixed(2);
   const totalDownloads = design.downloadCount + design.printCount * 2;
 
-  const linkSelector = `a[href="/${getCurrentLanguage()}/models/${design.id}"]`;
+  const linkSelector = `a[href="/${getCurrentLanguage()}/models/${design.id}-${design.slug}"]`;
   const linkElement = document.querySelector(linkSelector);
 
   if (linkElement && !linkElement.hasAttribute('data-processed')) {
@@ -358,7 +359,9 @@ async function handleMakerPage(handle, lang) {
     isFetchingMakerData = true;
 
     const makerData = await fetchAndExtractMakerData(handle, lang);
+    // console.log('makerData', makerData)
     mergedData = await fetchAndMergeLikes(handle, makerData, lang);
+    // console.log('mergedData', mergedData)
 
     mergedData.forEach(updateCardOnPage);
 
@@ -457,11 +460,13 @@ async function fetchAndExtractMakerData(handle, lang) {
     const designResponse = await fetch(
       `${domain}/api/v1/design-service/published/${userId}/design?handle=@${handle}&limit=${limit}&offset=${offset}&lang=${lang}`
     );
+    
     if (!designResponse.ok) {
       throw new Error(`Error fetching designs: ${designResponse.status}`);
     }
 
     const designData = await designResponse.json();
+    // console.log(designData)
     allDesigns = allDesigns.concat(designData.hits);
     totalAvailable = designData.total;
     totalFetched += designData.hits.length;
@@ -621,6 +626,9 @@ function checkPageTypeAndLoadData() {
   const modelMatch = window.location.href.match(
     /https:\/\/(www\.)?(makerworld\.com|makerworld\.com\.cn)\/(en|zh|de)\/models\/(\d+)/
   );
+
+  // console.log('makerMatch',makerMatch)
+  // console.log('modelMatch', modelMatch)
 
   if (makerMatch) {
     const handle = makerMatch[4];
